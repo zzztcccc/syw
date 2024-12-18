@@ -1,10 +1,13 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
-    <title>雅韵花事</title>
-    <style type="text/css">
-        /* 确保body和html元素占据整个视口 */
-        html, body {
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图片轮播</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+      /* 设置html和body的宽高以及去除默认边距 */
+      html, body {
             margin: 0;
             padding: 0;
             width: 100%;
@@ -31,388 +34,214 @@
             z-index: 1; 
         }
 
-        /* 标题图片 */
-        .title-img {
+        /* 轮播图容器样式 */
+        .carousel-container {
             position: absolute;
-            top: 0;
+            top: 87%; /* 轮播图位于背景图的中间 */
             left: 50%;
-            transform: translateX(-50%);
-            z-index: 2; 
-            width: 50%; 
-            max-height: 15vh; 
-            object-fit: cover;
-        }
-
-        /* xiak-container 容器，包含 xiak 图片和左右按钮 */
-        .xiak-container {
-            position: absolute; 
-            top: 4.8vh; 
-            left: 50%;
-            bottom: -67%;
-            transform: translateX(-50%);
-            display: flex;
-            justify-content: center; 
-            align-items: center; 
-            width: 80%; 
-            z-index: 1; 
-        }
-
-        /* xiak 图片 */
-        .xiak {
-            width: 120%; 
-            height: auto;
-        }
-
-        /* 左侧按钮：定位在xiak图片的左侧 */
-        .hqz-btn {
-            width: 7.5vw; 
-            margin: 0 -8%;
-        }
-        
-        /* 右侧按钮 */
-        .hqy-btn {
-            width: 8vw; 
-            margin: 0 -8%;
-        }
-
-        /* 花器图片容器 */
-        .vase-container {
-            position: absolute;
-            bottom: 9%; 
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            justify-content: space-around;
-            width: 70%; /* 容器宽度占80% */
-            z-index: 1;
-        }
-
-        /* 花器图片样式 */
-        .vase-container img {
-            width: 20%; /* 每个花器图片宽度占容器的20% */
-            height: auto;
-            object-fit: contain;
-            transition: transform 0.3s ease; /* 添加平滑缩放效果 */
-            cursor: move; /* 鼠标指针变成拖动样式 */
-        }
-
-        .vase-container img:hover {
-            transform: scale(1.1); /* 鼠标悬停时，放大图片 */
-        }
-
-        /* 遮罩层的样式，初始为半透明黑色 */
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); 
-            z-index: 1;
-            transition: opacity 0.5s ease; 
-        }
-
-        /* 提示文本样式 */
-        .tooltip-text {
-            position: absolute;
-            color: white;
-            font-family: "佛系演示体", sans-serif;
-            font-weight: bold;
-            z-index: 3; 
-            text-align: center;
-            pointer-events: none; 
-            font-size: 6vw;
-            display: none; 
-        }
-
-        /* 提示文本的位置设置 */
-        #tooltip-flower {
-            top: 13vh;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        #tooltip-vase {
-            bottom: 25vh;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        #tooltip-switch {
-            top: 78vh;
-            left: 15%;
             transform: translate(-50%, -50%);
-        }
-
-        /* 设置箭头样式 */
-        .arrow-up {
-            position: absolute;
-            z-index: 3; 
-            top: 8vh;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 6vw;
-            display: none; 
-        }
-
-        .arrow-down {
-            position: absolute;
-            width: 6vw;
-            bottom: -5vh;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 3; 
-            display: none; 
-        }
-
-        /* 新的指引照片 */
-        .switch-img {
-            position: absolute;
-            left: 5%;
-            bottom: 15vh;
-            width: 5vw;
-            height: auto;
-            z-index: 3; 
-            display: none; 
-        }
-
-        /* 控制 kai.png 图片的大小 */
-        .music-on {
-            width: 9%; 
-            height: auto; 
-        }
-
-        /* 控制 guan.png 图片的大小（保持默认大小） */
-        .music-off {
-            width: 8%; 
-            height: auto;
-        }
-       .yiwen{
-            position: absolute;
-            top: 17px;
-            left: 15px;
-            width: 8vw;
-            height: auto;
-            z-index: 1;
-       }
-        @font-face {
-            font-family: 'ziti2';
-            src: url('字灵倾心体(商用需授权).ttf');
-        }
-
-        /* 设置文本字体 */
-        #tooltip-vase, #tooltip-flower, #tooltip-switch {
-            font-family: 'ziti2';
-        }
-
-        /* 高亮显示效果 */
-        .highlight {
-            box-shadow: 0 0 10px rgba(255, 255, 255, 1); 
-            transition: box-shadow 0.3s ease-in-out; 
-        }
-
-        /* 强化 .hqz-btn 高亮效果 */
-        .hqz-btn.highlight {
-            box-shadow: 0 0 20px 10px rgba(255, 255, 255, 1);  /* 增强白色高亮效果 */
-            transition: box-shadow 0.3s ease-in-out; 
-            z-index: 10;  /* 确保该元素始终位于最上层 */
-        }
-
-        /* 强化 .xiak 高亮效果 */
-        .xiak.highlight {
-            box-shadow: 0 0 20px 10px rgba(255, 255, 255, 1);  /* 增强白色高亮效果 */
-            transition: box-shadow 0.3s ease-in-out;
-        }
-
-        /* 固定放置的目标位置（右下角） */
-        .drop-zone {
-            position: absolute;
-            bottom: 45%;
-            right: 20%;
-            width: 20%;
-            height: 15%;
-            border: 1px dashed #ddd;
-            background-color: rgba(0, 0, 0, 0.1);
+            width: 70%;
+            height: 30%;
+            z-index: 2; /* 使轮播图在背景图上方 */
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 1;
+            overflow: hidden;
         }
 
-    </style>
+        .carousel {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            width: 300%;
+            justify-content: space-around;
+        }
+
+        .carousel-item {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+            flex: 0 0 auto;
+            position: relative;
+        }
+
+        .carousel-item img {
+            max-width: 20%;
+            max-height: 100%;
+            object-fit: contain;
+            cursor: pointer; /* 设置图片为可点击状态 */
+        }
+
+        /* 左右按钮样式 */
+        .prev, .next {
+            position: absolute;
+            top: 88%;
+            transform: translateY(-50%);
+            background: transparent; /* 去掉默认背景 */
+            border: none;
+            cursor: pointer;
+            z-index: 3; /* 确保按钮在轮播图上方 */
+        }
+
+        /* 左侧按钮 */
+        .prev {
+            left: 1px;
+        }
+
+        /* 右侧按钮 */
+        .next {
+            right: 0px;
+        }
+
+        /* 左右按钮图片样式 */
+        .prev img{
+            width: 40px; /* 设置按钮图片的大小 */
+            height: auto;
+        }
+         .next img {
+            width: 43px; /* 设置按钮图片的大小 */
+            height: auto;
+        }
+
+        /* 鼠标悬停时改变按钮背景 */
+        .prev:hover, .next:hover {
+            opacity: 0.8;
+        }
+
+        /* 边框图样式 */
+        .border-image {
+            position: absolute;
+            bottom: 8%; /* 放在轮播图的下方 */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 75%; /* 设置边框的宽度，保持与轮播图的一致 */
+            max-width: 100%;
+            z-index: 1; /* 使边框图位于轮播图下方 */
+        }
+
+        /* 拖拽目标区域样式 */
+        .drop-zone {
+            position: absolute;
+            bottom: 45%;
+            left: 70%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 100px;
+            border: 2px dashed rgba(0, 0, 0, 0.5);
+            text-align: center;
+            line-height: 100px;
+            background-color: rgba(255, 255, 255, 0.3);
+            z-index: 2; /* 确保目标区域位于图片下方 */
+        }
+
+        /* 插入图片时调整样式 */
+        .dropped-image {
+            width: 100%; /* 图片会自动填充目标区域的宽度 */
+            height: 100%;
+            object-fit: contain; /* 保证图片按比例缩放 */
+        }
+  </style>
 </head>
 <body>
-    <!-- 容器 -->
-    <div class="container">
-        <!-- 标题图片 -->
-        <img class="title-img" src="./img/bjs.png" alt="标题图片" id="title-img">
-        
-        <img class="beijin" src="./img/bj1.png" alt="背景">
-        
-        <!-- xiak-container 容器，包含 xiak 图片和左右按钮 -->
-        <div class="xiak-container">
-            <!-- 左侧按钮 -->
-            <img class="hqz-btn" src="./img/qhz.png" alt="左侧切换按钮" id="hqz-btn">
-            <!-- xiak 图片 -->
-            <img class="xiak" src="./img/xiak.png" alt="上面图片" id="xiak-img">
-            <!-- 右侧按钮 -->
-            <img class="hqy-btn" src="./img/qhy.png" alt="右侧切换按钮">
-        </div>
+  <!-- 背景图 -->
+  <div class="container">
+    <img src="./img/bj1.png" alt="背景图" class="beijin">
 
-        <!-- 花器图片容器 -->
-        <div class="vase-container">
-            <img src="./img/hq1.png" alt="花器1" class="draggable">
-            <img src="./img/hq2.png" alt="花器2" class="draggable">
-            <img src="./img/hq3.png" alt="花器3" class="draggable">
-            <img src="./img/hq4.png" alt="花器4" class="draggable">
+    <!-- 轮播图 -->
+    <div class="carousel-container">
+      <div class="carousel">
+        <!-- 第一组图片 -->
+        <div class="carousel-item">
+          <img src="./img/hq1.png" alt="花器1" class="draggable" id="img1" draggable="true">
+          <img src="./img/hq2.png" alt="花器2" class="draggable" id="img2" draggable="true">
+          <img src="./img/hq3.png" alt="花器3" class="draggable" id="img3" draggable="true">
+          <img src="./img/hq4.png" alt="花器4" class="draggable" id="img4" draggable="true">
         </div>
-
-        <!-- 背景音乐控制按钮 -->
-        <img id="music-btn" class="music-btn music-off" src="./img/guan.png" alt="控制背景音乐" style="position: absolute; top: 23px; right: 25px; z-index: 5;" />
-        <img id="yiwen" class="yiwen" src="./img/yw.png" />
-        <div class="overlay"></div>
-
-        <!-- 提示：点击这里选择花 -->
-        <div id="tooltip-flower" class="tooltip-text">
-            点击这里选择花
+        <!-- 第二组图片 -->
+        <div class="carousel-item">
+          <img src="./img/hq5.png" alt="花器5" class="draggable" id="img5" draggable="true">
+          <img src="./img/hq5.png" alt="花器5" class="draggable" id="img6" draggable="true">
+          <img src="./img/hq6.png" alt="花器6" class="draggable" id="img7" draggable="true">
+          <img src="./img/hq6.png" alt="花器6" class="draggable" id="img8" draggable="true">
         </div>
-        <img class="arrow-up" src="./img/s.png" alt="向上箭头">
-
-        <!-- 提示：点击这里选择花瓶 -->
-        <div id="tooltip-vase" class="tooltip-text">
-            点击这里选择花瓶
-            <img class="arrow-down" src="./img/x.png" alt="向下箭头">
+        <!-- 第三组图片 -->
+        <div class="carousel-item">
+          <img src="./img/hq2.png" alt="花器2" class="draggable" id="img9" draggable="true">
+          <img src="./img/hq2.png" alt="花器2" class="draggable" id="img10" draggable="true">
+          <img src="./img/hq3.png" alt="花器3" class="draggable" id="img11" draggable="true">
+          <img src="./img/hq3.png" alt="花器3" class="draggable" id="img12" draggable="true">
         </div>
-
-        <!-- 新的指引：点击切换 -->
-        <div id="tooltip-switch" class="tooltip-text">
-            点击切换
-        </div>
-        <img src="./img/qx.png" alt="指引照片" class="switch-img">
-        
-        <!-- 固定放置的目标区域（右下角） -->
-        <div class="drop-zone">
-            拖放在这里
-        </div>
+      </div>
     </div>
 
-    <!-- JavaScript 控制逻辑 -->
-    <script>
-        var clickCount = 0; // 点击次数计数器
-        var isMusicPlaying = false; // 默认音乐为关闭状态
-        var musicBtn = document.getElementById("music-btn");
-        var backgroundMusic = new Audio("img/LBI利比 - 小城夏天.mp3"); 
+    <!-- 轮播图前后控制按钮 -->
+    <button class="prev"><img src="./img/qhz.png" alt="上一页"></button>
+    <button class="next"><img src="./img/qhy.png" alt="下一页"></button>
 
-        // 添加函数用于移除所有高亮
-        function removeHighlights() {
-            document.querySelector('.title-img').classList.remove("highlight");
-            document.querySelector('.xiak').classList.remove("highlight");
-            document.querySelector('.hqz-btn').classList.remove("highlight");
-            document.querySelector('.switch-img').classList.remove("highlight");
-        }
+    <!-- 边框图片 -->
+    <img src="./img/xiak.jpg" alt="边框" class="border-image">
 
-        // 页面加载时让标题图片立即显示高亮效果
-        window.onload = function() {
-            document.querySelector('.title-img').classList.add("highlight"); 
-            document.getElementById('tooltip-flower').style.display = 'block'; 
-            document.querySelector('.arrow-up').style.display = 'block'; 
-        };
+    <!-- 拖拽目标区域 -->
+    <div class="drop-zone">拖拽到这里</div>
+  </div>
 
-        // 获取遮罩层元素
-        var overlay = document.querySelector('.overlay');
+  <script src="script.js"></script>
+  <script>
+    let currentIndex = 0;
+    const items = document.querySelectorAll('.carousel-item');
+    const totalItems = items.length;
 
-        // 添加点击事件监听器到body，当点击时检查是否点击了特定区域
-        document.body.addEventListener('click', function(event) {
-            var flowerTooltip = document.getElementById('tooltip-flower');
-            var vaseTooltip = document.getElementById('tooltip-vase');
-            var switchTooltip = document.getElementById('tooltip-switch');
-            var switchImage = document.querySelector('.switch-img');
-            var arrowUp = document.querySelector('.arrow-up'); 
-            var arrowDown = document.querySelector('.arrow-down'); 
+    function moveToNextSlide() {
+      currentIndex = (currentIndex + 1) % totalItems;
+      updateCarouselPosition();
+    }
 
-            clickCount++; 
+    function moveToPrevSlide() {
+      currentIndex = (currentIndex - 1 + totalItems) % totalItems;
+      updateCarouselPosition();
+    }
 
-            // 第一次点击，显示选择花的提示
-            if (clickCount === 1 && flowerTooltip.style.display !== 'none') {
-                flowerTooltip.style.display = 'none';
-                arrowUp.style.display = 'none'; 
-                vaseTooltip.style.display = 'block';
-                arrowDown.style.display = 'block'; 
-                removeHighlights(); 
-                document.querySelector('.xiak').classList.add("highlight"); 
-            } 
-            // 第二次点击，显示选择花瓶的提示
-            else if (clickCount === 2 && vaseTooltip.style.display !== 'none') {
-                vaseTooltip.style.display = 'none';
-                arrowDown.style.display = 'none'; 
-                switchTooltip.style.display = 'block';
-                switchImage.style.display = 'block'; 
-                removeHighlights(); 
-                document.querySelector('.hqz-btn').classList.add("highlight"); // 更改为hqz-btn高亮
-            } 
-            // 第三次点击，隐藏所有提示，显示背景并移除遮罩
-            else if (clickCount === 3) {
-                switchTooltip.style.display = 'none';
-                switchImage.style.display = 'none'; 
-                overlay.style.opacity = '0'; 
-                removeHighlights(); 
-            }
-        });
+    function updateCarouselPosition() {
+      const carousel = document.querySelector('.carousel');
+      const offset = -currentIndex * 100; // 每次移动100%宽度
+      carousel.style.transform = `translateX(${offset}%)`;
+    }
 
-        // 点击音乐控制按钮
-        musicBtn.addEventListener('click', function() {
-            if (isMusicPlaying) {
-                backgroundMusic.pause();
-                musicBtn.src = "./img/guan.png"; 
-                musicBtn.classList.remove("music-on"); 
-                musicBtn.classList.add("music-off"); 
-            } else {
-                backgroundMusic.play();
-                musicBtn.src = "./img/kai.png"; 
-                musicBtn.classList.remove("music-off"); 
-                musicBtn.classList.add("music-on"); 
-            }
-            isMusicPlaying = !isMusicPlaying; 
-        });
+    // 手动控制轮播
+    document.querySelector('.prev').addEventListener('click', moveToPrevSlide);
+    document.querySelector('.next').addEventListener('click', moveToNextSlide);
 
-        // 为所有可拖动的图片添加拖拽功能
-        const draggableImages = document.querySelectorAll('.draggable');
+    // 拖拽功能
+    const draggableImages = document.querySelectorAll('.draggable');
+    const dropZone = document.querySelector('.drop-zone');
 
-        draggableImages.forEach(img => {
-            img.addEventListener('mousedown', (e) => {
-                let offsetX = e.clientX - img.getBoundingClientRect().left;
-                let offsetY = e.clientY - img.getBoundingClientRect().top;
+    draggableImages.forEach(img => {
+      img.addEventListener('dragstart', (e) => {
+        // 保存被拖动的图片
+        e.dataTransfer.setData('imageId', e.target.id);
+      });
+    });
 
-                // 处理拖拽时的移动
-                const onMouseMove = (e) => {
-                    img.style.position = 'absolute'; // 设置绝对定位
-                    img.style.left = e.clientX - offsetX + 'px';
-                    img.style.top = e.clientY - offsetY + 'px';
-                };
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();  // 允许拖拽区域接受拖拽内容
+    });
 
-                // 当鼠标松开时，移除移动事件
-                const onMouseUp = () => {
-                    document.removeEventListener('mousemove', onMouseMove);
-                    document.removeEventListener('mouseup', onMouseUp);
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const imageId = e.dataTransfer.getData('imageId');
+      const draggedImage = document.getElementById(imageId);
 
-                    // 将图片放置到目标位置
-                    const dropZone = document.querySelector('.drop-zone');
-                    const dropRect = dropZone.getBoundingClientRect();
+      // 清空目标区域中的文本
+      dropZone.innerHTML = '';
 
-                    if (e.clientX > dropRect.left && e.clientX < dropRect.right &&
-                        e.clientY > dropRect.top && e.clientY < dropRect.bottom) {
-                        img.style.left = dropRect.left + (dropRect.width - img.offsetWidth) / 2 + 'px';
-                        img.style.top = dropRect.top + (dropRect.height - img.offsetHeight) / 2 + 'px';
-                    }
-                };
+      // 创建一个新元素来显示拖放的图片
+      const newImage = draggedImage.cloneNode(true);
+      newImage.classList.add('dropped-image');
 
-                // 监听鼠标移动事件
-                document.addEventListener('mousemove', onMouseMove);
-
-                // 监听鼠标松开事件
-                document.addEventListener('mouseup', onMouseUp);
-            });
-        });
-    </script>
+      // 将新图片添加到目标区域
+      dropZone.appendChild(newImage);
+    });
+  </script>
 </body>
 </html>
