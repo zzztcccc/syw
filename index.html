@@ -33,7 +33,17 @@
             position: relative; 
             z-index: 1; 
         }
-
+/* 标题图片 */
+.title-img {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2; 
+            width: 50%; 
+            max-height: 15vh; 
+            object-fit: cover;
+        }
         /* 轮播图容器样式 */
         .carousel-container {
             position: absolute;
@@ -72,7 +82,25 @@
             object-fit: contain;
             cursor: pointer; /* 设置图片为可点击状态 */
         }
+ /* 控制 kai.png 图片的大小 */
+ .music-on {
+            width: 9%; 
+            height: auto; 
+        }
 
+        /* 控制 guan.png 图片的大小（保持默认大小） */
+        .music-off {
+            width: 8%; 
+            height: auto;
+        }
+        .yiwen{
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 8vw;
+            height: auto;
+            z-index: 1;
+       }
         /* 左右按钮样式 */
         .prev, .next {
             position: absolute;
@@ -147,7 +175,7 @@
   <!-- 背景图 -->
   <div class="container">
     <img src="./img/bj1.png" alt="背景图" class="beijin">
-
+    <img class="title-img" src="./img/bjs.png" alt="标题图片" id="title-img">
     <!-- 轮播图 -->
     <div class="carousel-container">
       <div class="carousel">
@@ -160,21 +188,26 @@
         </div>
         <!-- 第二组图片 -->
         <div class="carousel-item">
-          <img src="./img/hq5.png" alt="花器5" class="draggable" id="img5" draggable="true">
-          <img src="./img/hq5.png" alt="花器5" class="draggable" id="img6" draggable="true">
-          <img src="./img/hq6.png" alt="花器6" class="draggable" id="img7" draggable="true">
-          <img src="./img/hq6.png" alt="花器6" class="draggable" id="img8" draggable="true">
+          <img src="./img/hq1.png" alt="花器5" class="draggable" id="img5" draggable="true">
+          <img src="./img/hq2.png" alt="花器5" class="draggable" id="img6" draggable="true">
+          <img src="./img/hq3.png" alt="花器6" class="draggable" id="img7" draggable="true">
+          <img src="./img/hq4.png" alt="花器6" class="draggable" id="img8" draggable="true">
         </div>
         <!-- 第三组图片 -->
         <div class="carousel-item">
-          <img src="./img/hq2.png" alt="花器2" class="draggable" id="img9" draggable="true">
+          <img src="./img/hq1.png" alt="花器2" class="draggable" id="img9" draggable="true">
           <img src="./img/hq2.png" alt="花器2" class="draggable" id="img10" draggable="true">
           <img src="./img/hq3.png" alt="花器3" class="draggable" id="img11" draggable="true">
-          <img src="./img/hq3.png" alt="花器3" class="draggable" id="img12" draggable="true">
+          <img src="./img/hq4.png" alt="花器3" class="draggable" id="img12" draggable="true">
         </div>
       </div>
     </div>
+ <!-- 背景音乐控制按钮 -->
+ <img id="music-btn" class="music-btn music-off" src="./img/guan.png" alt="控制背景音乐" style="position: absolute; top: 10px; right: 10px; z-index: 5;" />
+ <img id="yiwen" class="yiwen" src="./img/yw.png" />
+ 
 
+ 
     <!-- 轮播图前后控制按钮 -->
     <button class="prev"><img src="./img/qhz.png" alt="上一页"></button>
     <button class="next"><img src="./img/qhy.png" alt="下一页"></button>
@@ -188,6 +221,25 @@
 
   <script src="script.js"></script>
   <script>
+    
+        var isMusicPlaying = false; // 默认音乐为关闭状态
+        var musicBtn = document.getElementById("music-btn");
+        var backgroundMusic = new Audio("./img/LBI利比 - 小城夏天.mp3"); 
+      // 点击音乐控制按钮
+      musicBtn.addEventListener('click', function() {
+            if (isMusicPlaying) {
+                backgroundMusic.pause();
+                musicBtn.src = "./img/guan.png"; 
+                musicBtn.classList.remove("music-on"); 
+                musicBtn.classList.add("music-off"); 
+            } else {
+                backgroundMusic.play();
+                musicBtn.src = "./img/kai.png"; 
+                musicBtn.classList.remove("music-off"); 
+                musicBtn.classList.add("music-on"); 
+            }
+            isMusicPlaying = !isMusicPlaying; 
+        });
     let currentIndex = 0;
     const items = document.querySelectorAll('.carousel-item');
     const totalItems = items.length;
