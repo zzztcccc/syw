@@ -233,7 +233,7 @@
         <!-- 第一组图片 - 花器 -->
         <div class="carousel-item">
             <img src="./img/花篮.png" alt="花器1" class="draggable vase" id="img1" draggable="true">
-            <img src="./img/花盘.png" alt="花器2" class="draggable vase" id="img2" draggable="true">
+            <img src="./img/hq2.png" alt="花器2" class="draggable vase" id="img2" draggable="true">
             <img src="./img/花瓶.png" alt="花器3" class="draggable vase" id="img3" draggable="true">
             <img src="./img/花筒.png" alt="花器4" class="draggable vase" id="img4" draggable="true">
         </div>
@@ -537,7 +537,7 @@ draggableImages.forEach(img => {
                     // 检查新图片是否加载成功
                     newImage.onerror = function() {
                         console.error(`无法加载图片: ${newImageSrc}`);
-                        alert('所选的花朵组合不合适，请选择一个副花和一个主花。');
+                        alert('所选的花器和花朵组合不存在，请尝试其他组合。');
                     };
                 }
             }

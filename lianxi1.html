@@ -233,7 +233,7 @@
         <!-- 第一组图片 - 花器 -->
         <div class="carousel-item">
             <img src="./img/花篮.png" alt="花器1" class="draggable vase" id="img1" draggable="true">
-            <img src="./img/花盘.png" alt="花器2" class="draggable vase" id="img2" draggable="true">
+            <img src="./img/hq2.png" alt="花器2" class="draggable vase" id="img2" draggable="true">
             <img src="./img/花瓶.png" alt="花器3" class="draggable vase" id="img3" draggable="true">
             <img src="./img/花筒.png" alt="花器4" class="draggable vase" id="img4" draggable="true">
         </div>
@@ -313,11 +313,11 @@
     // 手动控制轮播
     document.querySelector('.prev').addEventListener('click', moveToPrevSlide);
     document.querySelector('.next').addEventListener('click', moveToNextSlide);
+
     const draggableImages = document.querySelectorAll('.draggable');
 const dropZone = document.querySelector('.drop-zone');
 
 let selectedVase = null; // 用于存储当前选择的花器路径
-let currentFlowerCombination = ""; // 用于存储当前组合的花朵
 
 // 创建拖动的副本
 function createDragGhost(image) {
@@ -341,14 +341,15 @@ function removeDragGhost(ghost) {
     }
 }
 
-// 规范化路径，确保路径格式一致
+// 规范化路径，确保路径格式一致并去掉可能存在的协议和主机部分
 function normalizePath(path) {
-    // 去掉可能存在的协议和主机部分
+    // 去掉文件协议和主机名部分，如果有的话
     let normalized = path.replace(/^[a-zA-Z]+:\/\/[^\/]+/, '');
-    // 将反斜杠转为正斜杠，并去掉开头的斜杠
+    // 将反斜杠转换为正斜杠，并去掉开头的斜杠
     normalized = normalized.replace(/\\/g, '/').replace(/^\//, './img/');
-    // 对路径进行URL解码
-    return decodeURIComponent(normalized);
+    // 对路径进行URL编码以处理特殊字符
+    normalized = encodeURIComponent(normalized);
+    return decodeURIComponent(normalized); // 解码以保留非ASCII字符
 }
 
 // 设置图片固定大小
@@ -361,7 +362,6 @@ function setFixedImageSize(image, width, height) {
 document.querySelectorAll('.vase').forEach(vase => {
     vase.addEventListener('dragstart', function (e) {
         selectedVase = vase.src; // 保存花器的路径
-        currentFlowerCombination = vase.src.split('/').pop().replace('.png', ''); // 记录花器名称
         console.log('选择的花器:', selectedVase); // 调试输出
         e.dataTransfer.setData("text/plain", selectedVase); // 设置拖拽数据
     });
@@ -369,13 +369,14 @@ document.querySelectorAll('.vase').forEach(vase => {
     vase.addEventListener('dragend', function () {
         // 当拖拽结束时检查是否放置到了目标区域
         if (selectedVase !== null) {
-            dropZone.innerHTML = ''; // 清空目标区域
+            // 清空目标区域
+            dropZone.innerHTML = '';
 
-            // 克隆原始花器并添加到目标区域
+            // 克隆原始图片并添加到目标区域，同时保持尺寸不变
             const newImage = document.createElement('img');
             newImage.src = selectedVase;
-            newImage.classList.add('dropped-image');
-            setFixedImageSize(newImage, 200, 200);
+            newImage.classList.add('dropped-image'); // 应用新样式，但不改变尺寸
+            setFixedImageSize(newImage, 200, 200); // 设置固定的宽度和高度
             dropZone.appendChild(newImage);
         }
     });
@@ -420,10 +421,9 @@ dropZone.addEventListener('drop', function (e) {
     // 获取花朵文件名
     const flowerFileName = normalizedItemSrc.split('/').pop().replace('.png', '');
 
-    // 拼接新的花器+花朵路径
-    currentFlowerCombination += `+${flowerFileName}`; // 逐步增加组合的花朵
-
-    const newImageSrc = `./img/${currentFlowerCombination}.png`; // 拼接新图片路径
+    // 拼接新图片路径（例如：花篮 + 含羞草）
+    const vaseName = normalizedSelectedVase.split('/').pop().replace('.png', '');
+    const newImageSrc = `./img/${vaseName}+${flowerFileName}.png`;
 
     // 清空目标区域
     dropZone.innerHTML = '';
@@ -431,9 +431,10 @@ dropZone.addEventListener('drop', function (e) {
     // 创建合成后的图片并加入目标区域
     const newImage = document.createElement('img');
     newImage.src = newImageSrc;
-    newImage.classList.add('dropped-image');
-    setFixedImageSize(newImage, 200, 200);
+    newImage.classList.add('dropped-image'); // 给合成的图片添加样式
 
+    setFixedImageSize(newImage, 200, 200); // 设置固定的宽度和高度
+    
     dropZone.appendChild(newImage);
 
     // 更新选中的花器为最新的组合图片
@@ -507,8 +508,8 @@ draggableImages.forEach(img => {
                     dropZone.innerHTML = '';
                     const newImage = document.createElement('img');
                     newImage.src = selectedVase;
-                    newImage.classList.add('dropped-image');
-                    setFixedImageSize(newImage, 100, 100);
+                    newImage.classList.add('dropped-image'); // 应用新样式，但不改变尺寸
+                    setFixedImageSize(newImage, 100, 100); // 设置固定的宽度和高度
                     dropZone.appendChild(newImage);
                 } else if (selectedVase) {
                     // 规范化路径
@@ -517,7 +518,7 @@ draggableImages.forEach(img => {
 
                     // 获取花朵文件名
                     const flowerFileName = normalizedDroppedImageSrc.split('/').pop().replace('.png', '');
-                    // 拼接新图片路径
+                    // 拼接新图片路径（例如：花篮 + 含羞草）
                     const vaseName = normalizedSelectedVase.split('/').pop().replace('.png', '');
                     const newImageSrc = `./img/${vaseName}+${flowerFileName}.png`;
 
@@ -527,8 +528,8 @@ draggableImages.forEach(img => {
                     // 创建合成后的图片并加入目标区域
                     const newImage = document.createElement('img');
                     newImage.src = newImageSrc;
-                    newImage.classList.add('dropped-image');
-                    setFixedImageSize(newImage, 100, 100);
+                    newImage.classList.add('dropped-image'); // 应用新样式，但不改变尺寸
+                    setFixedImageSize(newImage, 100, 100); // 设置固定的宽度和高度
                     dropZone.appendChild(newImage);
 
                     // 更新选中的花器为最新的组合图片
@@ -537,13 +538,14 @@ draggableImages.forEach(img => {
                     // 检查新图片是否加载成功
                     newImage.onerror = function() {
                         console.error(`无法加载图片: ${newImageSrc}`);
-                        alert('所选的花朵组合不合适，请选择一个副花和一个主花。');
+                        alert('所选的花器和花朵组合不存在，请尝试其他组合。');
                     };
                 }
             }
         }, { once: true });
     });
 });
+
 
 
     // 获取指引图片元素
