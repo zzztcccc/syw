@@ -267,7 +267,7 @@
     <!-- 边框图 -->
     <img class="border-image" src="./img/xiak.jpg" alt="边框图">
   </div>
-
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     var isMusicPlaying = false;
     var musicBtn = document.getElementById("music-btn");
@@ -546,72 +546,85 @@ draggableImages.forEach(img => {
 });
 
 
-    // 获取指引图片元素
-const guideImg = document.getElementById("guide-img");
-const backgroundImg = document.querySelector(".beijin");
+$(document).ready(function() {
+  // 获取指引图片元素
+  const $guideImg = $("#guide-img");
+  const $backgroundImg = $(".beijin");
+  const $overlay = $("#overlay");
+  const $xuxianImg = $("#xuxian-img");
 
-// 获取指引图片显示与隐藏的逻辑
-const overlay = document.getElementById("overlay");
-overlay.addEventListener("click", function() {
-    overlay.style.opacity = "0"; // 使遮盖层渐隐
-    guideImg.style.display = "none"; // 隐藏指引图片
-    xuxianImg.style.display = "none"; // 隐藏续线图片
+  // 获取指引图片显示与隐藏的逻辑
+  $overlay.on("click", function() {
+    $overlay.css("opacity", "0"); // 使遮盖层渐隐
+    $guideImg.hide(); // 隐藏指引图片
+    $xuxianImg.hide(); // 隐藏续线图片
+  });
+
+  // 显示遮盖层和指引图片
+  function showOverlay() {
+    $overlay.show().css("opacity", "1"); // 显示遮盖层并渐显
+    $guideImg.show(); // 显示指引图片
+    $xuxianImg.show(); // 显示续线图片
+  }
+
+  // 点击遮盖层时隐藏高亮效果
+  $overlay.on("click", function() {
+    $overlay.css("opacity", "0"); // 渐隐遮盖层
+
+    // 延时隐藏遮盖层
+    setTimeout(function() {
+      $overlay.hide(); // 等待过渡效果完成后隐藏遮盖层
+    }, 500);
+  });
+
+  // 更新指引图片的位置
+  function updateGuideImgPosition() {
+    const beijinRect = $backgroundImg[0].getBoundingClientRect(); // 获取背景图的位置和尺寸
+
+    const guideImgWidth = beijinRect.width * 0.22; // 指引图片宽度是背景图宽度的20%
+    const guideImgLeft = beijinRect.left + (beijinRect.width * 0.87) - (guideImgWidth / 2); // 左侧位置是背景图左边的80%
+
+    $guideImg.css({
+      left: `${guideImgLeft}px`,
+      top: `${beijinRect.top + (beijinRect.height * 0.55) - ($guideImg.height() / 2)}px`,
+      width: `${guideImgWidth}px`
+    });
+  }
+
+  // 更新虚线图片的位置
+  function updateXuxianPosition() {
+    const beijinRect = $backgroundImg[0].getBoundingClientRect(); // 获取背景图的位置和尺寸
+
+    const xuxianImgWidth = beijinRect.width * 0.5; // 设置虚线图片的宽度
+    const xuxianImgLeft = beijinRect.left + (beijinRect.width * 0.65) - (xuxianImgWidth / 2); // 左侧位置是背景图左边
+
+    $xuxianImg.css({
+      left: `${xuxianImgLeft}px`,
+      top: `${beijinRect.top + (beijinRect.height * 0.67) - ($xuxianImg.height() / 2)}px`,
+      width: `${xuxianImgWidth}px`
+    });
+  }
+
+  // 在页面加载时，首先调用更新位置的函数
+  $(window).on("load", function() {
+    updateGuideImgPosition();
+    updateXuxianPosition();
+  });
+
+ // 防抖：在窗口大小变化时，使用防抖技术限制resize事件的频繁触发
+ let resizeTimeout;
+  $(window).on("resize", function() {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(function() {
+      updateGuideImgPosition();
+      updateXuxianPosition();
+    }, 200); // 200ms 延时
+  });
+
+  // 假设在页面加载时，初始显示遮盖层和指引图片
+  showOverlay();
 });
 
-// 显示遮盖层和指引图片
-function showOverlay() {
-  overlay.style.display = "block"; // 显示遮盖层
-      overlay.style.opacity = "1"; // 使遮盖层渐显
-      guideImg.style.display = "block"; // 显示指引图片
-      xuxianImg.style.display = "block"; // 显示续线图片
-}
-// 点击遮盖层时隐藏高亮效果
-overlay.addEventListener("click", function() {
-      overlay.style.opacity = "0"; // 渐隐遮盖层
-     
-
-      // 延时隐藏遮盖层
-      setTimeout(() => {
-        overlay.style.display = "none";
-      }, 500); // 等待过渡效果完成后隐藏遮盖层
-    });
-
-// 更新指引图片的位置
-function updateGuideImgPosition() {
-  const beijinRect = backgroundImg.getBoundingClientRect(); // 获取背景图的位置和尺寸
-
-  // 根据背景图的位置和尺寸来计算指引图片的位置和大小
-  const guideImgWidth = beijinRect.width * 0.22; // 指引图片宽度是背景图宽度的20%
-  const guideImgLeft = beijinRect.left + (beijinRect.width * 0.87) - (guideImgWidth / 2); // 左侧位置是背景图左边的80%
-
-  guideImg.style.left = `${guideImgLeft}px`;  // 设置新的 left 值
-  guideImg.style.top = `${beijinRect.top + (beijinRect.height * 0.55) - (guideImg.offsetHeight / 2)}px`; // 计算 top 值，使用背景图的高度的45%
-  guideImg.style.width = `${guideImgWidth}px`; // 设置新的宽度
-}
-// 获取虚线图片元素
-const xuxianImg = document.getElementById("xuxian-img");
-
-// 更新虚线图片的位置
-function updateXuxianPosition() {
-  const beijinRect = backgroundImg.getBoundingClientRect(); // 获取背景图的位置和尺寸
-
-  // 根据背景图的位置和尺寸来计算虚线图片的位置和大小
-  const xuxianImgWidth = beijinRect.width * 0.5; // 设置虚线图片的宽度
-  const xuxianImgLeft = beijinRect.left + (beijinRect.width * 0.65) - (xuxianImgWidth / 2); // 左侧位置是背景图左边
-
-  xuxianImg.style.left = `${xuxianImgLeft}px`;  // 设置新的 left 值
-  xuxianImg.style.top = `${beijinRect.top + (beijinRect.height * 0.67) - (xuxianImg.offsetHeight / 2)}px`; // 设置新的 top 值
-  xuxianImg.style.width = `${xuxianImgWidth}px`; // 设置新的宽度
-}
-
-// 在页面加载时，首先调用更新位置的函数
-window.addEventListener("load", updateGuideImgPosition);
-window.addEventListener("load", updateXuxianPosition);
-// 在窗口大小变化时，重新计算位置
-window.addEventListener("resize", updateGuideImgPosition);
-window.addEventListener("resize", updateXuxianPosition);
-// 假设在页面加载时，初始显示遮盖层和指引图片
-showOverlay();
   </script>
 </body>
 </html>
